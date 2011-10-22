@@ -19,6 +19,12 @@ var errors = {
 	unallowed_get: "You are not allowed to poll to this port."
 }
 
+var copyHeaders = [
+	{ key: 'Location', status:302 },
+	{ key: 'Content-Type', status:null },
+	{ key: 'Content-Length', status:null }
+];
+
 function createPort(url, listen) {
 	var port = ports[url];
 	if(port)
@@ -69,11 +75,20 @@ function trigger(req, res) {
 		dropIfEmpty(req.url);
 	}
 	else {
+		var status = 200;
+		var headers = {}
+		for(var i = 0; i < copyHeaders.length; i++) {
+			var sc = copyHeaders[i].status;
+			var h = copyHeaders[i].key;
+			var lc = h.toLowerCase();
+			if(req.headers[lc]) {
+				headers[h] = req.headers[lc];
+				if(sc != null)
+					status = sc;
+			}
+		}
 		for(var i = 0; i < port.length; i++) {
-			if(req.headers['content-type'])
-				port[i].setHeader("Content-Type", req.headers['content-type']);
-			if(req.headers['content-length'])
-				port[i].setHeader("Content-Length", req.headers['content-length']);
+			port[i].writeHead(status, headers);
 		}
 		req.addListener('data', function(chunk) {
 			for(var i = 0; i < port.length; i++) {
