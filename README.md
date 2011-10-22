@@ -27,12 +27,15 @@ Here is a simple example with two ports:
 
 `ports` defines the paths which are availible. Please note that you have to use
 regular expressions.
+
 * `post_ip` allows only certian ip addresses to post messages to this port
+
 * `get_ip` allows only certian ip addresses to get messages from this port
 
 In this example, there are two port-wildcards: 
 1. `^/messages/.*$` which allows posting from the loopback ip and getting from
 everywhere
+
 2. `^/chat$` which is a wild place as Everyone can post and get
 
 Security
