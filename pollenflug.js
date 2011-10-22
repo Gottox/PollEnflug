@@ -59,6 +59,17 @@ function listen(req, res) {
 	}
 	else {
 		ports[req.url].push(res);
+		req.connection.addListener('end', function() {
+			var port = ports[req.url];
+			if(port) {
+				for(var i = 0; i < port.length; i++) {
+					if(res == port[i]) {
+						port.splice(i, 1);
+						break;
+					}
+				}
+			}
+		})
 	}
 }
 
